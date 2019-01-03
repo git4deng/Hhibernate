@@ -3,23 +3,32 @@
 		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
 		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
-    <session-factory>
-    <!--连接数据库的基本信息-->
-    <property name="connection.username">root</property>
-    <property name="connection.password">root</property>
-    <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="connection.url">jdbc:mysql://localhost:3306/david_hibernate</property>
-   
-   <!--配置hibernate的基本信息-->
-    <!-- hibernate所使用的数据库方言-->
-    <property name="dialect">hibernate.dialect org.hibernate.dialect.MySQLInnoDBDialect</property>
+	<session-factory>
     
-    <!--执行操作是否在控制台打印sql-->
-    <property name="show_sql">true</property>
-     
-     <!--是否对sql格式化-->
-     <property name="format_sql">true</property>
-     <!--指定自动生成数据表的策略-->
-     <property name="hbm2ddl.auto">update</property>
-    </session-factory>
+		<!-- 配置连接数据库的基本信息 -->
+		<property name="connection.username">root</property>
+		<property name="connection.password">root</property>
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql:///david_hibernate</property>
+		
+		<!-- 配置 hibernate 的基本信息 -->
+		<!-- hibernate 所使用的数据库方言 -->
+		<!-- <property name="dialect">org.hibernate.dialect.MySQLInnoDBDialect</property> -->
+		<!--注意此处：在mysql 5.0版本以后不支持 type=InnoDB 关键字，需要使用 engine=InnoDB,上面方言可能导致hibernate创建表失败！-->		
+		<property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>		
+		
+		<!-- 执行操作时是否在控制台打印 SQL -->
+		<property name="show_sql">true</property>
+	
+		<!-- 是否对 SQL 进行格式化 -->
+		<property name="format_sql">true</property>
+	
+		<!-- 指定自动生成数据表的策略 -->
+		<property name="hbm2ddl.auto">update</property>
+		
+		<!-- 指定关联的 .hbm.xml 文件 -->
+		<mapping resource="com/david/hibernate/helloworld/entity/News.hbm.xml"/>
+	
+	</session-factory>
+
 </hibernate-configuration>
