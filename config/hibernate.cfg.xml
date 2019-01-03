@@ -30,7 +30,6 @@
 			create-drop:依据.hbm.xml创建表，但是在sessionFactory关闭后会自动删除表
 			update:最常用的，依据.hbm.xml创建表，会根据.hbm.xml中的配置对已存在的表更新表结构，不会删除已有的行和列
 			validate：会与数据库中存在的表进行比较，若.hbm.xml存在的列，数据库表不存在会抛出异常
-		
 		-->
 		<property name="hbm2ddl.auto">update</property>
 		
