@@ -35,6 +35,7 @@
 		
 		<!-- 指定关联的 .hbm.xml 文件 -->
 		<mapping resource="com/david/hibernate/helloworld/entity/News.hbm.xml"/>
+		<mapping resource="com/david/hibernate/session/entities/Article.hbm.xml"/>
 	
 	</session-factory>
 
