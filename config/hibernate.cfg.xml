@@ -36,6 +36,28 @@
 		使它们变为临时对象,这样在删除过后就能执行save或则saveorupdate()方法了 -->
 		<property name="hibernate.use_identifier_rollback">true</property>
 		
+		<!--配置c3p0数据源-->
+		<!--连接池最大连接数-->
+		<property name="hibernate.c3p0.max_size">10</property>	
+		<!--连接池最小连接数-->	
+		<property name="hibernate.c3p0.min_size">5</property>
+		<!--每次生成连接的数量2个-->		
+		<property name="hibernate.c3p0.acquire_increment">2</property>	
+		<!--检测线程每个2秒检查一次连接超时的连接-->	
+		<property name="hibernate.c3p0.idle_test_period">2000</property>
+		<!-- 连接超时时间 -->		
+		<property name="hibernate.c3p0.timeout">2000</property>		
+		<!-- 缓存 Statement 对象的数量 -->
+		<property name="hibernate.c3p0.max_statements">10</property>		
+		
+		<!--设定 JDBC 的 Statement 读取数据的时候每次从数据库中取出的记录条数(对MySQL无效，对oracle有效)-->
+		<property name="hibernate.jdbc.fetch_size">100</property>
+		
+		<!--设定对数据库进行批量删除，批量更新和批量插入的时候的批次大小(对MySQL无效，对oracle有效)-->
+		<property name="hibernate.jdbc.batch_size">30</property>
+		
+		
+		
 		<!-- 指定关联的 .hbm.xml 文件 -->
 		<mapping resource="com/david/hibernate/helloworld/entity/News.hbm.xml"/>
 		<mapping resource="com/david/hibernate/session/entities/Article.hbm.xml"/>
