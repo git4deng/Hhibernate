@@ -3,8 +3,8 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 2019-1-3 21:08:46 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="com.david.hibernate.session.entities.Article" table="DAVID_ARTICLE">
-        <id name="id" type="java.lang.Integer">
+    <class name="com.david.hibernate.session.entities.Article" table="DAVID_ARTICLE" select-before-update="false">
+        <id name="id" type="java.lang.Integer" unsaved-value="8">
             <column name="ID" />
             <generator class="native" />
         </id>

@@ -32,6 +32,9 @@
 			validate：会与数据库中存在的表进行比较，若.hbm.xml存在的列，数据库表不存在会抛出异常
 		-->
 		<property name="hbm2ddl.auto">update</property>
+		<!-- 设为 true, 将改变 delete() 方法的运行行为: delete() 方法会把持久化对象或游离对象的 OID 设置为 null, 
+		使它们变为临时对象,这样在删除过后就能执行save或则saveorupdate()方法了 -->
+		<property name="hibernate.use_identifier_rollback">true</property>
 		
 		<!-- 指定关联的 .hbm.xml 文件 -->
 		<mapping resource="com/david/hibernate/helloworld/entity/News.hbm.xml"/>
