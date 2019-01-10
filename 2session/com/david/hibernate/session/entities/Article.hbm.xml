@@ -3,19 +3,40 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!-- Generated 2019-1-3 21:08:46 by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping>
-    <class name="com.david.hibernate.session.entities.Article" table="DAVID_ARTICLE" select-before-update="false">
-        <id name="id" type="java.lang.Integer" unsaved-value="8">
-            <column name="ID" />
-            <generator class="native" />
-        </id>
-        <property name="name" type="java.lang.String">
-            <column name="NAME" />
-        </property>
-        <property name="Author" type="java.lang.String">
-            <column name="AUTHOR" />
-        </property>
-        <property name="date" type="java.util.Date">
-            <column name="DATE" />
-        </property>
-    </class>
+
+	<!--dynamic-update设置：若设置为 true, 表示当更新一个对象时, 会动态生成 update 语句,update 语句中仅包含所有取值需要更新的字段. 默认值为 false-->
+	<!--dynamic-insert: 若设置为 true, 表示当保存一个对象时, 会动态生成 insert 语句, insert 语句中仅包含所有取值不为 null 的字段. 默认值为 false, -->
+	<!--select-before-update:设置 Hibernate 在更新某个持久化对象之前是否需要先执行一次查询. 默认值为 false-->
+	
+	<class name="com.david.hibernate.session.entities.Article" table="DAVID_ARTICLE"
+		select-before-update="false" dynamic-update="true" dynamic-insert="true">
+		<!--unsaved-value:若设定了该属性, Hibernate 会通过比较持久化类的 OID 值和该属性值来区分当前持久化类的对象是否为临时对象
+		主要表现在saveOrUpdate方法时，假如实体OID为次参数设置的值，将视作临时对象而执行insert语句
+		-->
+		<id name="id" type="java.lang.Integer" unsaved-value="8">
+			<column name="ID" />
+			<generator class="native" />
+		</id>
+		
+		
+		<property name="name" type="java.lang.String" >
+			<column name="NAME" />
+		</property>
+		
+		<!--unique: 设置是否为该属性所映射的数据列添加唯一约束-->
+		<!--update: 指示该列能不能被修改  -->
+		<!--index: 指定一个字符串的索引名称. 当系统需要 Hibernate 自动建表时, 用于为该属性所映射的数据列-->
+		<!-- length: 指定该属性所映射数据列的字段的长度 -->
+		<property name="Author" type="java.lang.String" 
+		unique="true" update="false" index="article_author" length="20">
+			<column name="AUTHOR" />
+		</property>
+		<property name="date" type="java.util.Date">
+			<column name="DATE" />
+		</property>
+		
+		<!--映射派生属性-->
+		<!--formula：设置一个 SQL 表达式, Hibernate 将根据它来计算出派生属性的值. 相当于一个子查询，所有需要加()-->
+		<property name="desc" formula="(select concat(name,':',AUTHOR) from DAVID_ARTICLE a where a.id=id)"></property>
+	</class>
 </hibernate-mapping>

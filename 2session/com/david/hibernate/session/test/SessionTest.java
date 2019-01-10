@@ -196,8 +196,8 @@ public class SessionTest {
 	 */
 	@Test
 	public void testSessionGet() {
-		Article article = (Article) session.get(Article.class, 2);
-		System.out.println(article);
+		Article article = (Article) session.get(Article.class, 1);
+		System.out.println(article.getDesc());
 	}
 	/**
 	 * load():会获取到一个持久化对象
@@ -313,5 +313,45 @@ public class SessionTest {
 			}
 		});
 	}
+	/*
+	 * ----------------------------------------------分割符-----------------------------------------------
+	 * hibernate映射文件解析涉及的一些测试
+	 */
+	/**
+	 * 配置文件class标签属性dynamic-update设置：若设置为 true, 表示当更新一个对象时, 会动态生成 update 语句,
+	 * update 语句中仅包含所有取值需要更新的字段. 默认值为 false，同理，dynamic-insert: 若设置为 true, 表示
+	 * 当保存一个对象时, 会动态生成 insert 语句, insert 语句中仅包含所有取值不为 null 的字段. 默认值为 false
+	 */
+	@Test
+	public void testDynamicUpdateAndInsert() {
+		Article article5=(Article) session.get(Article.class, 5);
+		article5.setAuthor("CCCC");
+		
+		Article article=new Article();
+		article.setAuthor("EEE");
+		session.save(article);
+	}
+	
+	@Test
+	public void testIdGenerator() {
+		// 测试时将主键生成策略改成对应的值
+		//increment:会先读取表中的主键的最大值, 而接下来向表中插入记录时, 就在 max(id) 的基础上递增, 增量为 1,并发线程不安全
+		
+		Article article=new Article();
+		article.setAuthor("FFF");
+		//执行这个操作将看到查询max id的select语句和insert article语句
+		session.save(article);
+	}
+	
+	/**
+	 * 测试 对象映射文件的 property节点的update属性，author属性设置false即不能被修改
+	 */
+	@Test
+	public void testPropertyUpdate(){
+		Article article1=(Article) session.get(Article.class, 1);
+		article1.setAuthor("AAAA");
+	}
+	
+	
 
 }

@@ -7,7 +7,9 @@ public class Article {
 	private String name;
 	private String Author;
 	private Date date;
-
+	//增加这个字段主要用于测试 hibernate派生属性 即我们这个属性值设置为 Author：name
+	private String desc;
+	
 	public Article() {
 		super();
 	}
@@ -49,6 +51,14 @@ public class Article {
 
 	public void setDate(Date date) {
 		this.date = date;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 
 	@Override
