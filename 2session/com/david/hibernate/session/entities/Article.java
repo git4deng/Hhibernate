@@ -1,5 +1,6 @@
 package com.david.hibernate.session.entities;
 
+import java.sql.Blob;
 import java.util.Date;
 
 public class Article {
@@ -9,6 +10,10 @@ public class Article {
 	private Date date;
 	//增加这个字段主要用于测试 hibernate派生属性 即我们这个属性值设置为 Author：name
 	private String desc;
+	//大文本
+	private String content;
+	//图片二进制
+	private Blob image;
 	
 	public Article() {
 		super();
@@ -61,8 +66,25 @@ public class Article {
 		this.desc = desc;
 	}
 
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public Blob getImage() {
+		return image;
+	}
+
+	public void setImage(Blob image) {
+		this.image = image;
+	}
+
 	@Override
 	public String toString() {
-		return "Article [id=" + id + ", name=" + name + ", Author=" + Author + ", date=" + date + "]";
+		return "Article [id=" + id + ", name=" + name + ", Author=" + Author + ", date=" + date + ", desc=" + desc
+				+ ", content=" + content + ", image=" + image + "]";
 	}
 }

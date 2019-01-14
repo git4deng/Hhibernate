@@ -38,5 +38,18 @@
 		<!--映射派生属性-->
 		<!--formula：设置一个 SQL 表达式, Hibernate 将根据它来计算出派生属性的值. 相当于一个子查询，所有需要加()-->
 		<property name="desc" formula="(select concat(name,':',AUTHOR) from DAVID_ARTICLE a where a.id=id)"></property>
+		<!--映射大文件-->
+		<!--可以使用sql-type属性进行精确映射sql对应的类型-->
+		<!--  Mysql 不支持标准 SQL 的 CLOB 类型, 在 Mysql 中, 用 TEXT, MEDIUMTEXT 及 LONGTEXT 类型来表示长度操作 255 的长文本数据-->
+		<property name="content">
+			<column name="content" sql-type="mediumtext"></column>
+		</property>
+		
+		<!--在持久化类中, 二进制大对象可以声明为 byte[] 或 java.sql.Blob 类型; 字符串可以声明为 java.lang.String 或 java.sql.Clob-->
+		<!--映射二进制文件-->
+		<property name="image">
+			<column name="image" sql-type="mediumblob"></column>
+		</property>
+	
 	</class>
 </hibernate-mapping>

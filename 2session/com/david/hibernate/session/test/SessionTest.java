@@ -1,9 +1,14 @@
 package com.david.hibernate.session.test;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -351,7 +356,32 @@ public class SessionTest {
 		Article article1=(Article) session.get(Article.class, 1);
 		article1.setAuthor("AAAA");
 	}
-	
-	
+	/**
+	 * BLOB表示二进制对象(Binary Large Object):二进制对象，通过流将实现读取操作。
+	 * Mysql 不支持标准 SQL 的 CLOB 类型, 在 Mysql 中, 用 TEXT, MEDIUMTEXT 及 LONGTEXT 类型来表示长度操作 255 的长文本数据
+	 * 在持久化类中, 二进制大对象可以声明为 byte[] 或 java.sql.Blob 类型; 字符串可以声明为 java.lang.String 或 java.sql.Clob
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testBlob() throws Exception{
+		Article article=new Article();
+		article.setAuthor("DAVID");
+		article.setName("insert an image");
+		article.setContent("content");
+		article.setDate(new Date());
+		
+		InputStream is=new FileInputStream("Hydrangeas.jpg");
+		Blob image=Hibernate.getLobCreator(session).createBlob(is, is.available());
+		
+		article.setImage(image);
+		
+		session.save(article);
+		
+		Article article1=(Article) session.get(Article.class, 1);
+		Blob image1 = article1.getImage();
+		InputStream binaryStream = image1.getBinaryStream();
+		System.out.println(binaryStream.available());
+	}
 
 }
