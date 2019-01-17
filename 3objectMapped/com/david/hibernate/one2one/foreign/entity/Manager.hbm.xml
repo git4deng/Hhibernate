@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.david.hibernate.one2one.foreign.entity">
+    <class name="Manager" table="DAVID_MANAGER">
+        <id name="mgrId" type="java.lang.Integer">
+            <column name="MGR_ID" />
+            <generator class="native" />
+        </id>
+        <property name="mgrName" type="java.lang.String">
+            <column name="MGR_NAME" />
+        </property>
+        
+         <!-- 
+        	没有外键的一端需要使用one-to-one元素，该元素使用 property-ref 属性指定使用被关联实体主键以外的字段作为关联字段,
+        	如果不指定property-ref则默认使用dept的主键进行关联
+         -->
+        <one-to-one name="dept" class="Department" property-ref="mgr"></one-to-one>
+    </class>
+</hibernate-mapping>

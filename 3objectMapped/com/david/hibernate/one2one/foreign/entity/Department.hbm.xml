@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.david.hibernate.one2one.foreign.entity">
+    <class name="Department" table="DAVID_DEPARTMENT">
+        <id name="deptId" type="java.lang.Integer">
+            <column name="DEPT_ID" />
+            <generator class="native" />
+        </id>
+        <property name="deptName" type="java.lang.String">
+            <column name="DEPT_NAME" />
+        </property>
+        <!--使用外键的方式来映射1对1的关系-->
+        <!--关键点在于 unique="true",唯一约束,相当于限制了n这边不能由相同的MGR_ID,即只能于Manager一一对应了-->
+        <many-to-one name="mgr"  class="Manager" column="MGR_ID" unique="true"></many-to-one>
+    </class>
+</hibernate-mapping>
