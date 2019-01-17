@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.david.hibernate.unionSubclass.entity">
+	
+	<class name="UnionPerson" table="DAVID_UNION_PERSON">
+
+		<id name="id" type="java.lang.Integer">
+			<column name="ID" />
+			<!--使用 union-subclass 映射策略是不可使用 identity 的主键生成策略, 因为同一类继承层次中所有实体类都需
+			要使用同一个主键种子, 即多个持久化实体对应的记录的主键应该是连续的. 受此影响, 也不该使用 native 主键生成策略, 
+			因为 native 会根据数据库来选择使用 identity 或 sequence-->
+			<generator class="hilo" />
+		</id>
+		
+		<property name="name" type="java.lang.String">
+			<column name="NAME" />
+		</property>
+		<property name="age" type="java.lang.Integer">
+			<column name="AGE" />
+		</property>
+		<!--采用 union-subclass 元素可以实现将每一个实体对象映射到一个独立的表中,子类增加的属性可以有非空约束-->
+		<!--子类实例的数据仅保存在子类表中, 而在父类表中没有任何记录,在这种映射策略下，既不需要使用鉴别者列，也无须使用 key 元素来映射共有主键-->
+		<union-subclass name="UnionStudent" table="DAVID_UNION_STUDENT">
+			<property name="school" column="school" type="string"></property>
+		</union-subclass>
+		
+	</class>
+</hibernate-mapping>
