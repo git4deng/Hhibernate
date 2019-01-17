@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.david.hibernate.joinedSubclass.entity">
+	
+	<class name="JoinedPerson" table="DAVID_JOINED_PERSON">
+
+		<id name="id" type="java.lang.Integer">
+			<column name="ID" />
+			<generator class="native" />
+		</id>
+		
+		<property name="name" type="java.lang.String">
+			<column name="NAME" />
+		</property>
+		<property name="age" type="java.lang.Integer">
+			<column name="AGE" />
+		</property>
+		<!--采用 joined-subclass 元素的继承映射可以实现每个子类一张表，父类实例保存在父类表中，子类实例由父类表和子类表共同存储-->
+		<joined-subclass name="JoinedStudent" table="DAVID_JOINED_STUDENT">
+			<!--在这种映射策略下，无须使用鉴别者列，但需要为每个子类使用 key 元素映射共有主键-->
+			<key column="STUDENT_ID"></key>
+			<!--子类增加的属性可以添加非空约束。因为子类的属性和父类的属性没有保存在同一个表中-->
+			<property name="school" column="school" type="string"></property>
+		</joined-subclass>
+		
+	</class>
+</hibernate-mapping>
