@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.david.hibernate.retrieve.classLevel.entity">
+	<class name="ReCustomer" table="DAVID_CUSTOMER_RETRIEVE" lazy="false" batch-size="5">
+		<id name="customerId" type="java.lang.Integer">
+			<column name="CUSTOMER_ID" />
+			<generator class="native" />
+		</id>
+		<property name="customerName" type="java.lang.String">
+			<column name="CUSTOMER_NAME" />
+		</property>
+		<set name="orders" table="DAVID_ORDER_RETRIEVE" inverse="true" cascade="save-update" 
+		batch-size="5" fetch="subselect">
+			<!--指出关联的外键-->
+			<key column="CUSTOMER_ID"></key>
+			<!--指出对应多的类-->
+			<one-to-many class="ReOrder"/>
+		</set>
+	</class>
+</hibernate-mapping>

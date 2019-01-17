@@ -61,16 +61,43 @@
 		<!-- 指定关联的 .hbm.xml 文件 -->
 		<mapping resource="com/david/hibernate/helloworld/entity/News.hbm.xml"/>
 		<mapping resource="com/david/hibernate/session/entities/Article.hbm.xml"/>
+		
+		<!--组合映射-->
 		<mapping resource="com/david/hibernate/objectMapped/entities/Worker.hbm.xml"/>
+		
+		<!--many2one单项多对一-->
 		<mapping resource="com/david/hibernate/n21/entity/Customer.hbm.xml"/>
 		<mapping resource="com/david/hibernate/n21/entity/Order.hbm.xml"/>
 		
+		<!--many2one双向多对一-->
 		<mapping resource="com/david/hibernate/n21both/entity/CustomerBoth.hbm.xml"/>
 		<mapping resource="com/david/hibernate/n21both/entity/OrderBoth.hbm.xml"/>
 		
+		<!--one2one基于外键的形式映射-->
 		<mapping resource="com/david/hibernate/one2one/foreign/entity/Manager.hbm.xml"/>
 		<mapping resource="com/david/hibernate/one2one/foreign/entity/Department.hbm.xml"/>
+		<!--one2one基于主键方式映射-->
+		<mapping resource="com/david/hibernate/one2one/primary/entity/ManagerPrimary.hbm.xml"/>
+		<mapping resource="com/david/hibernate/one2one/primary/entity/DepartmentPrimary.hbm.xml"/>
+		<!--many2many单项多对多-->
+		<mapping resource="com/david/hibernate/n2n/entity/Category.hbm.xml"/>
+		<mapping resource="com/david/hibernate/n2n/entity/Item.hbm.xml"/>
+		
+		<!--many2many双向多对多-->
+		<mapping resource="com/david/hibernate/n2nBoth/entity/CategoryBoth.hbm.xml"/>
+		<mapping resource="com/david/hibernate/n2nBoth/entity/ItemBoth.hbm.xml"/>
+		<!--继承映射，使用配置subclass属性来映射-->
+		<mapping resource="com/david/hibernate/subclass/entity/Person.hbm.xml"/>	
+		
+		<!--继承映射，使用配置joined-subclass属性来映射-->
+		<mapping resource="com/david/hibernate/joinedSubclass/entity/JoinedPerson.hbm.xml"/>
 			
+		<!--继承映射，使用配置joined-subclass属性来映射-->
+		<mapping resource="com/david/hibernate/unionSubclass/entity/UnionPerson.hbm.xml"/>	
+		
+		<!--检索策略-->
+		<mapping resource="com/david/hibernate/retrieve/classLevel/entity/ReCustomer.hbm.xml"/>	
+		<mapping resource="com/david/hibernate/retrieve/classLevel/entity/ReOrder.hbm.xml"/>	
 	</session-factory>
 
 </hibernate-configuration>
