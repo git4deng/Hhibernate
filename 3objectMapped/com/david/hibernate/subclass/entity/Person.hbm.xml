@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2019-1-16 20:42:50 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping package="com.david.hibernate.subclass.entity">
+	<!-- discriminator-value 属性指定辨别者列的值-->
+	<class name="Person" table="DAVID_PERSON" discriminator-value="person">
+
+		<id name="id" type="java.lang.Integer">
+			<column name="ID" />
+			<generator class="native" />
+		</id>
+		<!--配置辨别者列-->
+		<!--因为父类和子类的实例全部保存在同一个表中，因此需要在该表内增加一列，使用该列来区分每行记录到低是哪个类的实例
+			这个列被称为辨别者列(discriminator) -->
+		<discriminator column="type" type="string"></discriminator>
+		<property name="name" type="java.lang.String">
+			<column name="NAME" />
+		</property>
+		<property name="age" type="java.lang.Integer">
+			<column name="AGE" />
+		</property>
+		<!--映射子类 -->
+		<!--采用 subclass 的继承映射可以实现对于继承关系中父类和子类使用同一张表-->
+		<!--注意：所有子类定义的字段都不能有非空约束-->
+		<subclass name="Student" discriminator-value="student">
+			<property name="school" type="string" column="school"></property>
+		</subclass>
+	</class>
+</hibernate-mapping>
