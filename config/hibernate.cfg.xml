@@ -97,7 +97,12 @@
 		
 		<!--检索策略-->
 		<mapping resource="com/david/hibernate/retrieve/classLevel/entity/ReCustomer.hbm.xml"/>	
-		<mapping resource="com/david/hibernate/retrieve/classLevel/entity/ReOrder.hbm.xml"/>	
+		<mapping resource="com/david/hibernate/retrieve/classLevel/entity/ReOrder.hbm.xml"/>
+		<!--HQL-->
+		<mapping resource="com/david/hibernate/hql/entity/DepartmentHQL.hbm.xml"/>
+		<mapping resource="com/david/hibernate/hql/entity/EmployeeHQL.hbm.xml"/>
+		
+			
 	</session-factory>
 
 </hibernate-configuration>
