@@ -21,7 +21,7 @@
 		<property name="show_sql">true</property>
 	
 		<!-- 是否对 SQL 进行格式化 -->
-		<property name="format_sql">true</property>
+		<property name="format_sql">false</property>
 	
 		<!-- 指定自动生成数据表的策略 -->
 		<!--
@@ -55,7 +55,13 @@
 		
 		<!--设定对数据库进行批量删除，批量更新和批量插入的时候的批次大小(对MySQL无效，对oracle有效)-->
 		<property name="hibernate.jdbc.batch_size">30</property>
-		
+		<property name="cache.use_second_level_cache">true</property>
+		<!--配置使用二级缓存的产品-->
+		<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+		<!--配置启用查询缓存-->
+		<property name="cache.use_query_cache">true</property>
+		<!--配置session管理的方式-->
+		<property name="current_session_context_class">thread</property>
 		
 		
 		<!-- 指定关联的 .hbm.xml 文件 -->
@@ -101,8 +107,13 @@
 		<!--HQL-->
 		<mapping resource="com/david/hibernate/hql/entity/DepartmentHQL.hbm.xml"/>
 		<mapping resource="com/david/hibernate/hql/entity/EmployeeHQL.hbm.xml"/>
+		<!--启用二级缓存配置-->
 		
-			
+		
+		<!--配置使用二级缓存的类-->
+		<class-cache usage="read-write" class="com.david.hibernate.hql.entity.EmployeeHQL"></class-cache>
+		<class-cache usage="read-write" class="com.david.hibernate.hql.entity.DepartmentHQL"></class-cache>
+		<collection-cache usage="read-write" collection="com.david.hibernate.hql.entity.DepartmentHQL.emps"/>
 	</session-factory>
 
 </hibernate-configuration>

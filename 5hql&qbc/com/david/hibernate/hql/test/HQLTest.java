@@ -1,7 +1,10 @@
 package com.david.hibernate.hql.test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -18,16 +21,17 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.jdbc.Work;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.david.hibernate.hql.dao.DepartmentHQLDao;
 import com.david.hibernate.hql.entity.DepartmentHQL;
 import com.david.hibernate.hql.entity.EmployeeHQL;
-
-import javafx.scene.DepthTest;
+import com.david.hibernate.hql.utils.HibernateUtil;
 
 @SuppressWarnings("deprecation")
 public class HQLTest {
@@ -394,5 +398,175 @@ public class HQLTest {
 		}
 		
 	}
-	
+	@Test
+	public void testHibernateSecendLevelCache(){
+		//1.回顾session一级缓存
+		//一下获取两次DepartmentHQL对象，仅仅发送一次select语句，这就是session缓存的作用
+		DepartmentHQL dept1 = (DepartmentHQL) session.get(DepartmentHQL.class, 2);
+		System.out.println(dept1.getName());
+		
+		/*
+		 * 但是当此时seesion关闭了，开启新的session过后，获取对象就会再次发送select语句，二级缓存主要解决的就是
+		 * 这个问题
+		 */
+		transaction.commit();
+		session.close();
+		
+		session=sessionFactory.openSession();
+		transaction=session.beginTransaction();
+		
+		DepartmentHQL dept2 = (DepartmentHQL) session.get(DepartmentHQL.class, 2);
+		System.out.println(dept2.getName());
+	}
+	@Test
+	public void testCollectionSecendLevelCache(){
+		
+		DepartmentHQL dept1 = (DepartmentHQL) session.get(DepartmentHQL.class, 2);
+		System.out.println(dept1.getName());
+		System.out.println(dept1.getEmps().size());
+		
+		transaction.commit();
+		session.close();
+		
+		session=sessionFactory.openSession();
+		transaction=session.beginTransaction();
+		
+		DepartmentHQL dept2 = (DepartmentHQL) session.get(DepartmentHQL.class, 2);
+		System.out.println(dept2.getName());
+		System.out.println(dept2.getEmps().size());
+	}
+	@Test
+	public void testQueryCache(){
+		String hql="FROM EmployeeHQL";
+		Query query = session.createQuery(hql);
+		query.setCacheable(true);
+		List<EmployeeHQL> list1 = query.list();
+		System.out.println(list1.size());
+		
+		list1 = query.list();
+		System.out.println(list1.size());
+		
+		Criteria criteria = session.createCriteria(EmployeeHQL.class);
+		criteria.setCacheable(true);
+		List list = criteria.list();
+		System.out.println(list.size());
+		list = criteria.list();
+		System.out.println(list.size());
+	}
+	/**
+	 * 	时间戳缓存区域存放了对于查询结果相关的表进行插入, 更新或删除操作的时间戳.  Hibernate 通过时间戳缓存区域来判断被缓存的查询结果是否过期, 其运行过程如下:
+		T1 时刻执行查询操作, 把查询结果存放在 QueryCache 区域, 记录该区域的时间戳为 T1
+		T2 时刻对查询结果相关的表进行更新操作, Hibernate 把 T2 时刻存放在 UpdateTimestampCache 区域.
+		T3 时刻执行查询结果前, 先比较 QueryCache 区域的时间戳和 UpdateTimestampCache 区域的时间戳, 若 T2 >T1, 
+		那么就丢弃原先存放在 QueryCache 区域的查询结果, 重新到数据库中查询数据, 再把结果存放到 QueryCache 区域; 若 T2 < T1, 直接从 QueryCache 中获得查询结果
+	 */
+	@Test
+	public void testUpdateTimeStampCache(){
+		Query query = session.createQuery("FROM EmployeeHQL");
+		query.setCacheable(true);
+		
+		List<EmployeeHQL> emps = query.list();
+		System.out.println(emps.size());
+		
+		EmployeeHQL employee = (EmployeeHQL) session.get(EmployeeHQL.class, 3);
+		employee.setSalary(30000);
+		
+		emps = query.list();
+		System.out.println(emps.size());
+	}
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testQueryItorator(){
+		/*
+		 * 如果没有这段select DepartmentHQL的代码，下面代码将会查询n条sql,因为iterate()方法回从一级或者二级缓存
+		 * 中去寻找满足条件的对象，如果没有，再从数据库中获取。
+		 */
+		DepartmentHQL dept = (DepartmentHQL) session.get(DepartmentHQL.class, 1);
+		System.out.println(dept.getEmps().size());
+		
+		String hql="FROM EmployeeHQL E WHERE E.dept.id= 1 ";
+		Iterator<EmployeeHQL> iterate = session.createQuery(hql).iterate();
+		while(iterate.hasNext()){
+			System.out.println(iterate.next().getName());
+		}
+		/*
+		 * 二级缓存中存在满足hql查询条件的对象时，控制台的输出结果
+		  	Hibernate: select department0_.D_ID as D_ID1_9_0_, department0_.D_NAME as D_NAME2_9_0_ from DAVID_DEPARTMENT_HQL 
+		  	department0_ where department0_.D_ID=?
+			Hibernate: select emps0_.D_ID as D_ID5_9_0_, emps0_.E_ID as E_ID1_11_0_, emps0_.E_ID as E_ID1_11_1_, 
+			emps0_.E_NAME as E_NAME2_11_1_, emps0_.E_SALARY as E_SALARY3_11_1_,
+			emps0_.E_EMAIL as E_EMAIL4_11_1_, emps0_.D_ID as D_ID5_11_1_ from DAVID_EMPLOYEE_HQL emps0_ where emps0_.D_ID=?
+			6
+			Hibernate: select employeehq0_.E_ID as col_0_0_ from DAVID_EMPLOYEE_HQL employeehq0_ where employeehq0_.D_ID=1
+			E-1
+			E-3
+			E-5
+			E-7
+			E-7
+			E-9  这里将是连续输出
+			
+			如果缓存中不存在时控制台的输出：
+			Hibernate: select department0_.D_ID as D_ID1_9_0_, department0_.D_NAME as D_NAME2_9_0_ from DAVID_DEPARTMENT_HQL 
+			department0_ where department0_.D_ID=?
+			Hibernate: select emps0_.D_ID as D_ID5_9_0_, emps0_.E_ID as E_ID1_11_0_, emps0_.E_ID as E_ID1_11_1_, 
+			emps0_.E_NAME as E_NAME2_11_1_, emps0_.E_SALARY as E_SALARY3_11_1_, emps0_.E_EMAIL as E_EMAIL4_11_1_, 
+			emps0_.D_ID as D_ID5_11_1_ from DAVID_EMPLOYEE_HQL emps0_ where emps0_.D_ID=?
+			2
+			Hibernate: select employeehq0_.E_ID as col_0_0_ from DAVID_EMPLOYEE_HQL employeehq0_ where employeehq0_.D_ID=1
+			Hibernate: select employeehq0_.E_ID as E_ID1_11_0_, employeehq0_.E_NAME as E_NAME2_11_0_, employeehq0_.E_SALARY 
+			as E_SALARY3_11_0_, employeehq0_.E_EMAIL as E_EMAIL4_11_0_, employeehq0_.D_ID as D_ID5_11_0_ from DAVID_EMPLOYEE_HQL 
+			employeehq0_ where employeehq0_.E_ID=?
+			E-1
+			Hibernate: select employeehq0_.E_ID as E_ID1_11_0_, employeehq0_.E_NAME as E_NAME2_11_0_, employeehq0_.E_SALARY as 
+			E_SALARY3_11_0_, employeehq0_.E_EMAIL as E_EMAIL4_11_0_, employeehq0_.D_ID as D_ID5_11_0_ from DAVID_EMPLOYEE_HQL 
+			employeehq0_ where employeehq0_.E_ID=?
+			E-3
+			Hibernate: select employeehq0_.E_ID as E_ID1_11_0_, employeehq0_.E_NAME as E_NAME2_11_0_, employeehq0_.E_SALARY as 
+			E_SALARY3_11_0_, employeehq0_.E_EMAIL as E_EMAIL4_11_0_, employeehq0_.D_ID as D_ID5_11_0_ from DAVID_EMPLOYEE_HQL 
+			employeehq0_ where employeehq0_.E_ID=?
+			E-5
+			Hibernate: select employeehq0_.E_ID as E_ID1_11_0_, employeehq0_.E_NAME as E_NAME2_11_0_, employeehq0_.E_SALARY as 
+			E_SALARY3_11_0_, employeehq0_.E_EMAIL as E_EMAIL4_11_0_, employeehq0_.D_ID as D_ID5_11_0_ from DAVID_EMPLOYEE_HQL 
+			employeehq0_ where employeehq0_.E_ID=?
+			E-7
+			Hibernate: select employeehq0_.E_ID as E_ID1_11_0_, employeehq0_.E_NAME as E_NAME2_11_0_, employeehq0_.E_SALARY as 
+			E_SALARY3_11_0_, employeehq0_.E_EMAIL as E_EMAIL4_11_0_, employeehq0_.D_ID as D_ID5_11_0_ from DAVID_EMPLOYEE_HQL 
+			employeehq0_ where employeehq0_.E_ID=?
+			E-7
+			Hibernate: select employeehq0_.E_ID as E_ID1_11_0_, employeehq0_.E_NAME as E_NAME2_11_0_, employeehq0_.E_SALARY as 
+			E_SALARY3_11_0_, employeehq0_.E_EMAIL as E_EMAIL4_11_0_, employeehq0_.D_ID as D_ID5_11_0_ from DAVID_EMPLOYEE_HQL 
+			employeehq0_ where employeehq0_.E_ID=?
+			E-9
+			
+		 */
+		
+	}
+	@Test
+	public void testSessionManager(){
+		//获取 Session
+		//开启事务
+		Session session = HibernateUtil.getInstance().getsession();
+		System.out.println("-->" + session.hashCode());
+		Transaction transaction = session.beginTransaction();
+		DepartmentHQLDao dao=new DepartmentHQLDao();
+		DepartmentHQL dept=new DepartmentHQL();
+		dept.setName("DD1");
+		dao.save(dept);
+		dao.save(dept);
+		dao.save(dept);
+		//若 Session 是由 thread 来管理的, 则在提交或回滚事务时, 已经关闭 Session 了. 
+		transaction.commit();
+		System.out.println(session.isOpen()); 
+	}
+	@Test
+	public void testBatch(){
+		session.doWork(new Work() {
+			
+			@Override
+			public void execute(Connection connection) throws SQLException {
+				
+				
+			}
+		});
+	}
 }

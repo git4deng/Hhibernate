@@ -2,7 +2,11 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="com.david.hibernate.hql.entity">
+    <!--  -->
+    
     <class name="DepartmentHQL" table="DAVID_DEPARTMENT_HQL">
+      	<!--也可以在映射文件中配置类二级缓存-->
+      	<!-- <cache usage="read-write"/> -->
         <id name="id" type="java.lang.Integer">
             <column name="D_ID" />
             <generator class="native" />
@@ -11,10 +15,13 @@
             <column name="D_NAME" />
         </property>
         <set name="emps" table="DAVID_EMPLOYEE_HQL" inverse="true" lazy="true">
+           <!--集合级别的二级缓存的配置也可以在这里配置-->
+           <!-- 	<cache usage="read-write"/> -->
             <key>
                 <column name="D_ID" />
             </key>
             <one-to-many class="EmployeeHQL" />
         </set>
+        
     </class>
 </hibernate-mapping>
